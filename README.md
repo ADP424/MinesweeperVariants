@@ -1,0 +1,2 @@
+# MinesweeperVariants
+Cursed Minesweeper
