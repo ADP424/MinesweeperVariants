@@ -4,13 +4,11 @@ import random
 import sys
 
 
-
 class Tile(Enum):
-    NULL = -1 # out of bounds
+    NULL = -1  # out of bounds
     EMPTY = 0
     MINE = 1
     NUMBERED = 2
-
 
 
 class MinesweeperTile:
@@ -24,7 +22,7 @@ class MinesweeperTile:
 
     value : float, default: 0
         A float or integer representing the number of mines surrounding the tile (if the tile is itself a mine, value is -1).
-    
+
     revealed : bool, default: False
         Whether the tile's value is visible to the player or not.
 
@@ -35,7 +33,14 @@ class MinesweeperTile:
         Whether the tile was updated by the last move or not.
     """
 
-    def __init__(self, type=Tile.EMPTY, value=0, revealed=False, flag_planted=False, changed_last_move=False):
+    def __init__(
+        self,
+        type=Tile.EMPTY,
+        value=0,
+        revealed=False,
+        flag_planted=False,
+        changed_last_move=False,
+    ):
         self.type = type
         self.value = value
         self.revealed = revealed
@@ -44,7 +49,6 @@ class MinesweeperTile:
 
         # set the recursion limit way up for my silly reveal tile function
         sys.setrecursionlimit(100000)
-
 
 
 class MinesweeperBoard:
@@ -70,7 +74,10 @@ class MinesweeperBoard:
         self.board_width = width
         self.board_height = height
         self.num_mines = num_mines
-        self.board = [[MinesweeperTile() for _ in range(self.board_width)] for _ in range(self.board_height)]
+        self.board = [
+            [MinesweeperTile() for _ in range(self.board_width)]
+            for _ in range(self.board_height)
+        ]
 
     def get_random_board(self, first_click_coords=(-1, -1)) -> list:
         """
@@ -89,7 +96,10 @@ class MinesweeperBoard:
         """
 
         # create a base board of size width x height
-        board = [[MinesweeperTile() for _ in range(self.board_width)] for _ in range(self.board_height)]
+        board = [
+            [MinesweeperTile() for _ in range(self.board_width)]
+            for _ in range(self.board_height)
+        ]
 
         # create a list of tiles surrounding and including the first click
         first_click_tiles = [
@@ -101,7 +111,7 @@ class MinesweeperBoard:
             (first_click_coords[0], first_click_coords[1] + 1),
             (first_click_coords[0] + 1, first_click_coords[1] - 1),
             (first_click_coords[0] + 1, first_click_coords[1]),
-            (first_click_coords[0] + 1, first_click_coords[1] + 1)
+            (first_click_coords[0] + 1, first_click_coords[1] + 1),
         ]
 
         # create a list of tuples representing every possible (row, col) pair
@@ -129,19 +139,23 @@ class MinesweeperBoard:
                 (mine_location[0], mine_location[1] + 1),
                 (mine_location[0] + 1, mine_location[1] - 1),
                 (mine_location[0] + 1, mine_location[1]),
-                (mine_location[0] + 1, mine_location[1] + 1)
+                (mine_location[0] + 1, mine_location[1] + 1),
             ]
-            
+
             # increase the value of each surrounding non-mine tile by 1
             for tile in surrounding_tiles:
-                if 0 <= tile[0] < self.board_height and 0 <= tile[1] < self.board_width and board[tile[0]][tile[1]].type != Tile.MINE:
+                if (
+                    0 <= tile[0] < self.board_height
+                    and 0 <= tile[1] < self.board_width
+                    and board[tile[0]][tile[1]].type != Tile.MINE
+                ):
                     board[tile[0]][tile[1]].value += 1
 
                     # change the tile's type to 'numbered' now that it has been assigned a number
                     board[tile[0]][tile[1]].type = Tile.NUMBERED
 
         return board
-    
+
     def make_move(self, row, col) -> MinesweeperTile:
         """
         Make a move on the board at the given row and column, if there isn't a flag planted there.
@@ -159,12 +173,16 @@ class MinesweeperBoard:
             The MinesweeperTile that was moved on
         """
 
-        if 0 <= row < self.board_height and 0 <= col < self.board_width and not self.board[row][col].flag_planted:
+        if (
+            0 <= row < self.board_height
+            and 0 <= col < self.board_width
+            and not self.board[row][col].flag_planted
+        ):
             self.reset_changed_last_move_board()
             self._reveal_tile(row, col)
             return self.board[row][col]
         return MinesweeperTile(Tile.NULL)
-    
+
     def _reveal_tile(self, row, col):
         """
         Reveal the tile at the given row and column.
@@ -192,11 +210,15 @@ class MinesweeperBoard:
                     (row, col + 1),
                     (row + 1, col - 1),
                     (row + 1, col),
-                    (row + 1, col + 1)
+                    (row + 1, col + 1),
                 ]
-                
+
                 for tile in surrounding_tiles:
-                    if 0 <= tile[0] < self.board_height and 0 <= tile[1] < self.board_width and self.board[tile[0]][tile[1]].type != Tile.MINE:
+                    if (
+                        0 <= tile[0] < self.board_height
+                        and 0 <= tile[1] < self.board_width
+                        and self.board[tile[0]][tile[1]].type != Tile.MINE
+                    ):
                         self._reveal_tile(tile[0], tile[1])
 
     def plant_flag_on_tile(self, row, col):
@@ -229,15 +251,19 @@ class MinesweeperBoard:
                 (row, col + 1),
                 (row + 1, col - 1),
                 (row + 1, col),
-                (row + 1, col + 1)
+                (row + 1, col + 1),
             ]
-            
+
             self.board[row][col].flag_planted = not self.board[row][col].flag_planted
             self.board[row][col].changed_last_move = True
 
             # change every numbered surrounding tile by the change value
             for tile in surrounding_tiles:
-                if 0 <= tile[0] < self.board_height and 0 <= tile[1] < self.board_width and self.board[tile[0]][tile[1]].type == Tile.NUMBERED:
+                if (
+                    0 <= tile[0] < self.board_height
+                    and 0 <= tile[1] < self.board_width
+                    and self.board[tile[0]][tile[1]].type == Tile.NUMBERED
+                ):
                     self.board[tile[0]][tile[1]].value += change_value
                     self.board[tile[0]][tile[1]].changed_last_move = True
 
@@ -269,12 +295,12 @@ class MinesweeperBoard:
         for row in self.board:
             for tile in row:
                 if not tile.revealed:
-                    print('#', end=" ")
+                    print("#", end=" ")
                 else:
                     if tile.value == 0:
-                        print('.', end=" ")
+                        print(".", end=" ")
                     elif tile.value == -1:
-                        print('B', end=" ")
+                        print("B", end=" ")
                     else:
                         print(tile.value, end=" ")
             print()
@@ -288,9 +314,9 @@ class MinesweeperBoard:
         for row in self.board:
             for tile in row:
                 if tile.value == 0:
-                    print('.', end=" ")
+                    print(".", end=" ")
                 elif tile.value == -1:
-                    print('B', end=" ")
+                    print("B", end=" ")
                 else:
                     print(tile.value, end=" ")
             print()
@@ -304,12 +330,11 @@ class MinesweeperBoard:
         for row in self.board:
             for tile in row:
                 if tile.changed_last_move:
-                    print('T', end=" ")
+                    print("T", end=" ")
                 else:
-                    print('F', end=" ")
+                    print("F", end=" ")
             print()
         print()
-
 
 
 class MinesweeperVBoard(MinesweeperBoard):
@@ -351,7 +376,10 @@ class MinesweeperVBoard(MinesweeperBoard):
         """
 
         # create a base board of size width x height
-        board = [[MinesweeperTile() for _ in range(self.board_width)] for _ in range(self.board_height)]
+        board = [
+            [MinesweeperTile() for _ in range(self.board_width)]
+            for _ in range(self.board_height)
+        ]
 
         # create a list of tiles surrounding and including the first click
         first_click_tiles = [
@@ -379,7 +407,7 @@ class MinesweeperVBoard(MinesweeperBoard):
             (first_click_coords[0] + 2, first_click_coords[1] - 1),
             (first_click_coords[0] + 2, first_click_coords[1]),
             (first_click_coords[0] + 2, first_click_coords[1] + 1),
-            (first_click_coords[0] + 2, first_click_coords[1] + 2)
+            (first_click_coords[0] + 2, first_click_coords[1] + 2),
         ]
 
         # create a list of tuples representing every possible (row, col) pair
@@ -422,19 +450,23 @@ class MinesweeperVBoard(MinesweeperBoard):
                 (mine_location[0] + 2, mine_location[1] - 1),
                 (mine_location[0] + 2, mine_location[1]),
                 (mine_location[0] + 2, mine_location[1] + 1),
-                (mine_location[0] + 2, mine_location[1] + 2)
+                (mine_location[0] + 2, mine_location[1] + 2),
             ]
-            
+
             # increase the value of each surrounding non-mine tile by 1
             for tile in surrounding_tiles:
-                if 0 <= tile[0] < self.board_height and 0 <= tile[1] < self.board_width and board[tile[0]][tile[1]].type != Tile.MINE:
+                if (
+                    0 <= tile[0] < self.board_height
+                    and 0 <= tile[1] < self.board_width
+                    and board[tile[0]][tile[1]].type != Tile.MINE
+                ):
                     board[tile[0]][tile[1]].value += 1
 
                     # change the tile's type to 'numbered' now that it has been assigned a number
                     board[tile[0]][tile[1]].type = Tile.NUMBERED
 
         return board
-    
+
     def _reveal_tile(self, row, col):
         """
         Reveal the tile at the given row and column.
@@ -455,36 +487,40 @@ class MinesweeperVBoard(MinesweeperBoard):
             # if the tile is empty, recursively reveal all adjacent, non-mine tiles
             if self.board[row][col].type == Tile.EMPTY:
                 surrounding_tiles = [
-                (row - 2, col - 2),
-                (row - 2, col - 1),
-                (row - 2, col),
-                (row - 2, col + 1),
-                (row - 2, col + 2),
-                (row - 1, col - 2),
-                (row - 1, col - 1),
-                (row - 1, col),
-                (row - 1, col + 1),
-                (row - 1, col + 2),
-                (row, col - 2),
-                (row, col - 1),
-                (row, col + 1),
-                (row, col + 2),
-                (row + 1, col - 2),
-                (row + 1, col - 1),
-                (row + 1, col),
-                (row + 1, col + 1),
-                (row + 1, col + 2),
-                (row + 2, col - 2),
-                (row + 2, col - 1),
-                (row + 2, col),
-                (row + 2, col + 1),
-                (row + 2, col + 2)
-            ]
-                
+                    (row - 2, col - 2),
+                    (row - 2, col - 1),
+                    (row - 2, col),
+                    (row - 2, col + 1),
+                    (row - 2, col + 2),
+                    (row - 1, col - 2),
+                    (row - 1, col - 1),
+                    (row - 1, col),
+                    (row - 1, col + 1),
+                    (row - 1, col + 2),
+                    (row, col - 2),
+                    (row, col - 1),
+                    (row, col + 1),
+                    (row, col + 2),
+                    (row + 1, col - 2),
+                    (row + 1, col - 1),
+                    (row + 1, col),
+                    (row + 1, col + 1),
+                    (row + 1, col + 2),
+                    (row + 2, col - 2),
+                    (row + 2, col - 1),
+                    (row + 2, col),
+                    (row + 2, col + 1),
+                    (row + 2, col + 2),
+                ]
+
                 for tile in surrounding_tiles:
-                    if 0 <= tile[0] < self.board_height and 0 <= tile[1] < self.board_width and self.board[tile[0]][tile[1]].type != Tile.MINE:
+                    if (
+                        0 <= tile[0] < self.board_height
+                        and 0 <= tile[1] < self.board_width
+                        and self.board[tile[0]][tile[1]].type != Tile.MINE
+                    ):
                         self._reveal_tile(tile[0], tile[1])
-    
+
     def plant_flag_on_tile(self, row, col):
         """
         Plant or unplant a flag on the tile at the given row and column if it is not revealed.
@@ -531,18 +567,21 @@ class MinesweeperVBoard(MinesweeperBoard):
                 (row + 2, col - 1),
                 (row + 2, col),
                 (row + 2, col + 1),
-                (row + 2, col + 2)
+                (row + 2, col + 2),
             ]
-            
+
             self.board[row][col].flag_planted = not self.board[row][col].flag_planted
             self.board[row][col].changed_last_move = True
 
             # change every numbered surrounding tile by the change value
             for tile in surrounding_tiles:
-                if 0 <= tile[0] < self.board_height and 0 <= tile[1] < self.board_width and self.board[tile[0]][tile[1]].type == Tile.NUMBERED:
+                if (
+                    0 <= tile[0] < self.board_height
+                    and 0 <= tile[1] < self.board_width
+                    and self.board[tile[0]][tile[1]].type == Tile.NUMBERED
+                ):
                     self.board[tile[0]][tile[1]].value += change_value
                     self.board[tile[0]][tile[1]].changed_last_move = True
-
 
 
 class DistanceMinesweeperBoard(MinesweeperBoard):
@@ -567,7 +606,9 @@ class DistanceMinesweeperBoard(MinesweeperBoard):
         What the distance is squared by when calculating the inverse (higher means smaller numbers means easier)
     """
 
-    def __init__(self, width=16, height=16, num_mines=20, board=None, distance_weight=1):
+    def __init__(
+        self, width=16, height=16, num_mines=20, board=None, distance_weight=1
+    ):
         super().__init__(width, height, num_mines, board)
         self.distance_weight = distance_weight
 
@@ -588,7 +629,10 @@ class DistanceMinesweeperBoard(MinesweeperBoard):
         """
 
         # create a base board of size width x height (all tiles that aren't mines are numbered in this version)
-        board = [[MinesweeperTile(type=Tile.NUMBERED) for _ in range(self.board_width)] for _ in range(self.board_height)]
+        board = [
+            [MinesweeperTile(type=Tile.NUMBERED) for _ in range(self.board_width)]
+            for _ in range(self.board_height)
+        ]
 
         # create a list of tiles surrounding and including the first click
         first_click_tiles = [
@@ -600,7 +644,7 @@ class DistanceMinesweeperBoard(MinesweeperBoard):
             (first_click_coords[0], first_click_coords[1] + 1),
             (first_click_coords[0] + 1, first_click_coords[1] - 1),
             (first_click_coords[0] + 1, first_click_coords[1]),
-            (first_click_coords[0] + 1, first_click_coords[1] + 1)
+            (first_click_coords[0] + 1, first_click_coords[1] + 1),
         ]
 
         # create a list of tuples representing every possible (row, col) pair
@@ -618,17 +662,30 @@ class DistanceMinesweeperBoard(MinesweeperBoard):
         # hide the mines in the board
         for mine_location in mine_locations:
             board[mine_location[0]][mine_location[1]] = MinesweeperTile(Tile.MINE)
-            
+
             # increase the value of every tile on the board by the inverse of its distance from the mine
             for row in range(len(board)):
                 for col in range(len(board[row])):
-                    if 0 <= row < self.board_height and 0 <= col < self.board_width and board[row][col].type != Tile.MINE:
+                    if (
+                        0 <= row < self.board_height
+                        and 0 <= col < self.board_width
+                        and board[row][col].type != Tile.MINE
+                    ):
 
                         # distance formula
-                        board[row][col].value += 1 / (math.sqrt(math.pow(mine_location[0] - row, 2) + math.pow(mine_location[1] - col, 2)))**self.distance_weight
+                        board[row][col].value += (
+                            1
+                            / (
+                                math.sqrt(
+                                    math.pow(mine_location[0] - row, 2)
+                                    + math.pow(mine_location[1] - col, 2)
+                                )
+                            )
+                            ** self.distance_weight
+                        )
 
         return board
-    
+
     def _reveal_tile(self, row, col):
         """
         Reveal the tile at the given row and column.
@@ -667,17 +724,26 @@ class DistanceMinesweeperBoard(MinesweeperBoard):
             # if removing a flag, increase all tiles by their inverse distance from the flag
             if self.board[row][col].flag_planted:
                 change_factor = 1
-            
+
             self.board[row][col].flag_planted = not self.board[row][col].flag_planted
             self.board[row][col].changed_last_move = True
 
             # change every numbered tile by the inverse of their distance from the flag
             for r in range(len(self.board)):
                 for c in range(len(self.board[r])):
-                    if 0 <= r < self.board_height and 0 <= c < self.board_width and self.board[r][c].type == Tile.NUMBERED and not (r == row and c == col):
-                        self.board[r][c].value += 1 / (math.sqrt(math.pow(row - r, 2) + math.pow(col - c, 2)))**self.distance_weight * change_factor
+                    if (
+                        0 <= r < self.board_height
+                        and 0 <= c < self.board_width
+                        and self.board[r][c].type == Tile.NUMBERED
+                        and not (r == row and c == col)
+                    ):
+                        self.board[r][c].value += (
+                            1
+                            / (math.sqrt(math.pow(row - r, 2) + math.pow(col - c, 2)))
+                            ** self.distance_weight
+                            * change_factor
+                        )
                         self.board[r][c].changed_last_move = True
-
 
 
 class WeightedMinesweeperBoard(MinesweeperBoard):
@@ -702,7 +768,9 @@ class WeightedMinesweeperBoard(MinesweeperBoard):
         What the distance is squared by when calculating the inverse (higher means smaller numbers means easier)
     """
 
-    def __init__(self, width=16, height=16, num_mines=20, board=None, distance_weight=1):
+    def __init__(
+        self, width=16, height=16, num_mines=20, board=None, distance_weight=1
+    ):
         super().__init__(width, height, num_mines, board)
         self.distance_weight = distance_weight
 
@@ -723,7 +791,10 @@ class WeightedMinesweeperBoard(MinesweeperBoard):
         """
 
         # create a base board of size width x height (all tiles that aren't mines are numbered in this version)
-        board = [[MinesweeperTile(type=Tile.NUMBERED) for _ in range(self.board_width)] for _ in range(self.board_height)]
+        board = [
+            [MinesweeperTile(type=Tile.NUMBERED) for _ in range(self.board_width)]
+            for _ in range(self.board_height)
+        ]
 
         # create a list of tiles surrounding and including the first click
         first_click_tiles = [
@@ -735,7 +806,7 @@ class WeightedMinesweeperBoard(MinesweeperBoard):
             (first_click_coords[0], first_click_coords[1] + 1),
             (first_click_coords[0] + 1, first_click_coords[1] - 1),
             (first_click_coords[0] + 1, first_click_coords[1]),
-            (first_click_coords[0] + 1, first_click_coords[1] + 1)
+            (first_click_coords[0] + 1, first_click_coords[1] + 1),
         ]
 
         # create a list of tuples representing every possible (row, col) pair
@@ -753,11 +824,15 @@ class WeightedMinesweeperBoard(MinesweeperBoard):
         # hide the mines in the board
         for mine_location in mine_locations:
             board[mine_location[0]][mine_location[1]] = MinesweeperTile(Tile.MINE)
-            
+
             # increase the value of every tile on the board by the inverse of its distance from the mine
             for row in range(len(board)):
                 for col in range(len(board[row])):
-                    if 0 <= row < self.board_height and 0 <= col < self.board_width and board[row][col].type != Tile.MINE:
+                    if (
+                        0 <= row < self.board_height
+                        and 0 <= col < self.board_width
+                        and board[row][col].type != Tile.MINE
+                    ):
 
                         # if the mine is above the tile, positive, else negative
                         vertical_weight = 1
@@ -769,14 +844,23 @@ class WeightedMinesweeperBoard(MinesweeperBoard):
                         if col < mine_location[1]:
                             horizontal_weight = -1
 
-                        squared_distance = math.pow(mine_location[0] - row, 2) * vertical_weight + math.pow(mine_location[1] - col, 2) * horizontal_weight
+                        squared_distance = (
+                            math.pow(mine_location[0] - row, 2) * vertical_weight
+                            + math.pow(mine_location[1] - col, 2) * horizontal_weight
+                        )
                         if squared_distance > 0:
-                            board[row][col].value += 1 / math.sqrt(squared_distance)**self.distance_weight
+                            board[row][col].value += (
+                                1 / math.sqrt(squared_distance) ** self.distance_weight
+                            )
                         elif squared_distance < 0:
-                            board[row][col].value -= 1 / math.sqrt(abs(squared_distance))**self.distance_weight
+                            board[row][col].value -= (
+                                1
+                                / math.sqrt(abs(squared_distance))
+                                ** self.distance_weight
+                            )
 
         return board
-    
+
     def _reveal_tile(self, row, col):
         """
         Reveal the tile at the given row and column.
@@ -815,14 +899,19 @@ class WeightedMinesweeperBoard(MinesweeperBoard):
             # if removing a flag, increase all tiles by their inverse distance from the flag
             if self.board[row][col].flag_planted:
                 change_factor = 1
-            
+
             self.board[row][col].flag_planted = not self.board[row][col].flag_planted
             self.board[row][col].changed_last_move = True
 
             # change every numbered tile by the inverse of their distance from the flag
             for r in range(len(self.board)):
                 for c in range(len(self.board[r])):
-                    if 0 <= r < self.board_height and 0 <= c < self.board_width and self.board[r][c].type == Tile.NUMBERED and not (r == row and c == col):
+                    if (
+                        0 <= r < self.board_height
+                        and 0 <= c < self.board_width
+                        and self.board[r][c].type == Tile.NUMBERED
+                        and not (r == row and c == col)
+                    ):
 
                         # if the mine is above the tile, positive, else negative
                         vertical_weight = 1
@@ -834,10 +923,22 @@ class WeightedMinesweeperBoard(MinesweeperBoard):
                         if c < col:
                             horizontal_weight = -1
 
-                        squared_distance = math.pow(row - r, 2) * vertical_weight + math.pow(col - c, 2) * horizontal_weight
+                        squared_distance = (
+                            math.pow(row - r, 2) * vertical_weight
+                            + math.pow(col - c, 2) * horizontal_weight
+                        )
                         if squared_distance > 0:
-                            self.board[r][c].value += 1 / math.sqrt(squared_distance)**self.distance_weight * change_factor
+                            self.board[r][c].value += (
+                                1
+                                / math.sqrt(squared_distance) ** self.distance_weight
+                                * change_factor
+                            )
                         elif squared_distance < 0:
-                            self.board[r][c].value -= 1 / math.sqrt(abs(squared_distance))**self.distance_weight * change_factor
+                            self.board[r][c].value -= (
+                                1
+                                / math.sqrt(abs(squared_distance))
+                                ** self.distance_weight
+                                * change_factor
+                            )
 
-                        self.board[r][c].changed_last_move = True
+                        self.board[r][c].changed_last_move = Tru
