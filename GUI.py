@@ -9,7 +9,8 @@ Minesweeper Versions:
 4 - Negative Minesweeper (negative mines can appear, which count as -1 mine for surrounding tiles)
 """
 
-from graphics import *
+from graphics import color_rgb
+from graphics import Rectangle, GraphWin, Point, Image
 from Minesweeper.MinesweeperBoard import Tile, MinesweeperBoard
 from Minesweeper.MinesweeperVBoard import MinesweeperVBoard
 from Minesweeper.DistanceMinesweeperBoard import DistanceMinesweeperBoard
