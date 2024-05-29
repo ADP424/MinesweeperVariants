@@ -6,6 +6,7 @@ Minesweeper Versions:
 1 - Minesweeper V (tiles see mines in a 5x5 area)
 2 - Distance Minesweeper (tiles see mines everywhere, and their values are equal to the sum of the inverse of their distances from all mines)
 3 - Weighted Minesweeper (tiles see mines everywhere, and their values are equal to the sum of the inverse of their distances from all mines, where left and down are considered negative, and up and right are considered positive)
+4 - Negative Minesweeper (negative mines can appear, which count as -1 mine for surrounding tiles)
 """
 
 from graphics import *
@@ -13,6 +14,7 @@ from Minesweeper.MinesweeperBoard import Tile, MinesweeperBoard
 from Minesweeper.MinesweeperVBoard import MinesweeperVBoard
 from Minesweeper.DistanceMinesweeperBoard import DistanceMinesweeperBoard
 from Minesweeper.WeightedMinesweeperBoard import WeightedMinesweeperBoard
+from Minesweeper.NegativeMinesweeperBoard import NegativeMinesweeperBoard
 
 # the height and width of the window to draw onto
 WINDOW_WIDTH = 600
@@ -121,8 +123,8 @@ def get_value_images(
     # if the tile is not revealed, check if there is a flag planted on it
     if not minesweeper_board.board[row][col].revealed:
 
-        # if a flag is planted, draw the flag
-        if minesweeper_board.board[row][col].flag_planted:
+        # if a positive flag is planted, draw it
+        if minesweeper_board.board[row][col].flag_planted == 1:
             return [
                 Image(
                     Point(
@@ -138,6 +140,27 @@ def get_value_images(
                         / 2,
                     ),
                     "images/flag.png",
+                    int(tile_size / 2),
+                    int(tile_size / 2),
+                )
+            ]
+
+        elif minesweeper_board.board[row][col].flag_planted == 2:
+            return [
+                Image(
+                    Point(
+                        (
+                            tile_board[row][col].getP1().getX()
+                            + tile_board[row][col].getP2().getX()
+                        )
+                        / 2,
+                        (
+                            tile_board[row][col].getP1().getY()
+                            + tile_board[row][col].getP2().getY()
+                        )
+                        / 2,
+                    ),
+                    "images/negative_flag.png",
                     int(tile_size / 2),
                     int(tile_size / 2),
                 )
@@ -204,6 +227,28 @@ def get_value_images(
                     / 2,
                 ),
                 "images/bomb.png",
+                int(tile_size / 2),
+                int(tile_size / 2),
+            )
+        ]
+
+    # if the tile is a negative mine, draw a negative mine
+    if minesweeper_board.board[row][col].type == Tile.NEGATIVE_MINE:
+        return [
+            Image(
+                Point(
+                    (
+                        tile_board[row][col].getP1().getX()
+                        + tile_board[row][col].getP2().getX()
+                    )
+                    / 2,
+                    (
+                        tile_board[row][col].getP1().getY()
+                        + tile_board[row][col].getP2().getY()
+                    )
+                    / 2,
+                ),
+                "images/negative_bomb.png",
                 int(tile_size / 2),
                 int(tile_size / 2),
             )
@@ -438,7 +483,7 @@ def get_value_images(
                 )
             )
 
-        return images
+    return images
 
 
 def create_value_board(tile_board: list, minesweeper_board: MinesweeperBoard) -> list:
@@ -651,6 +696,8 @@ def run_game(width=16, height=16, num_mines=40, version=0, difficulty="medium"):
                     minesweeper_board = DistanceMinesweeperBoard(
                         width, height, num_mines, distance_weight=1
                     )
+                case _:
+                    raise Exception("Invalid difficulty setting")
         case 3:
             match difficulty:
                 case "easy":
@@ -665,6 +712,24 @@ def run_game(width=16, height=16, num_mines=40, version=0, difficulty="medium"):
                     minesweeper_board = WeightedMinesweeperBoard(
                         width, height, num_mines, distance_weight=1
                     )
+                case _:
+                    raise Exception("Invalid difficulty setting")
+        case 4:
+            match difficulty:
+                case "easy":
+                    minesweeper_board = NegativeMinesweeperBoard(
+                        width, height, num_mines - (num_mines // 4), num_mines // 4
+                    )
+                case "medium":
+                    minesweeper_board = NegativeMinesweeperBoard(
+                        width, height, num_mines - (num_mines // 3), num_mines // 3
+                    )
+                case "hard":
+                    minesweeper_board = NegativeMinesweeperBoard(
+                        width, height, num_mines - (num_mines // 2), num_mines // 2
+                    )
+                case _:
+                    raise Exception("Invalid difficulty setting")
         case _:
             raise Exception("Invalid Minesweeper Version")
 
@@ -731,6 +796,6 @@ while True:
     WIDTH = 16
     HEIGHT = 16
     NUM_MINES = 40
-    VERSION = 1
-    DIFFICULTY = "MEDIUM"
+    VERSION = 4
+    DIFFICULTY = "hard"
     run_game(WIDTH, HEIGHT, NUM_MINES, VERSION, DIFFICULTY)

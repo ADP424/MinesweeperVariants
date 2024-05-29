@@ -146,7 +146,7 @@ class MinesweeperVBoard(MinesweeperBoard):
 
         if not self.board[row][col].revealed:
             self.board[row][col].revealed = True
-            self.board[row][col].flag_planted = False
+            self.board[row][col].flag_planted = 0
             self.board[row][col].changed_last_move = True
 
             # if the tile is empty, recursively reveal all adjacent, non-mine tiles
@@ -235,7 +235,7 @@ class MinesweeperVBoard(MinesweeperBoard):
                 (row + 2, col + 2),
             ]
 
-            self.board[row][col].flag_planted = not self.board[row][col].flag_planted
+            self.board[row][col].flag_planted = (self.board[row][col].flag_planted + 1) % 2
             self.board[row][col].changed_last_move = True
 
             # change every numbered surrounding tile by the change value
