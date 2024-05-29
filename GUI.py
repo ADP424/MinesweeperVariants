@@ -9,7 +9,10 @@ Minesweeper Versions:
 """
 
 from graphics import *
-from minesweeper import *
+from Minesweeper.MinesweeperBoard import Tile, MinesweeperBoard
+from Minesweeper.MinesweeperVBoard import MinesweeperVBoard
+from Minesweeper.DistanceMinesweeperBoard import DistanceMinesweeperBoard
+from Minesweeper.WeightedMinesweeperBoard import WeightedMinesweeperBoard
 
 # the height and width of the window to draw onto
 WINDOW_WIDTH = 600
@@ -728,6 +731,6 @@ while True:
     WIDTH = 16
     HEIGHT = 16
     NUM_MINES = 40
-    VERSION = 0
+    VERSION = 1
     DIFFICULTY = "MEDIUM"
     run_game(WIDTH, HEIGHT, NUM_MINES, VERSION, DIFFICULTY)
