@@ -778,7 +778,10 @@ def run_game(width=16, height=16, num_mines=40, version=0, difficulty="medium"):
             )
 
             # if the clicked tile was a mine, end the game
-            if activated_tile.type == Tile.MINE:
+            if (
+                activated_tile.type == Tile.MINE
+                or activated_tile.type == Tile.NEGATIVE_MINE
+            ):
                 minesweeper_board.reveal_all_tiles()
                 game_running = False
 
@@ -798,5 +801,5 @@ while True:
     HEIGHT = 16
     NUM_MINES = 40
     VERSION = 4
-    DIFFICULTY = "hard"
+    DIFFICULTY = "easy"
     run_game(WIDTH, HEIGHT, NUM_MINES, VERSION, DIFFICULTY)
