@@ -240,6 +240,26 @@ class MinesweeperBoard:
                     tile.changed_last_move = True
                 tile.revealed = True
 
+    def board_finished(self) -> bool:
+        """
+        Check if the board has been fully revealed/flagged correctly
+
+        Returns
+        -------
+        bool
+            Whether the board has been completed or not
+        """
+
+        for row in self.board:
+            for tile in row:
+
+                # if the tile hasn't been revealed and isn't a correctly flagged mine, the board isn't complete
+                if not tile.revealed and (
+                    tile.flag_planted == 0 or tile.type != Tile.MINE
+                ):
+                    return False
+        return True
+
     def print_board(self):
         """
         Print a string representation of the board to the terminal.

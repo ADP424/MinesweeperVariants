@@ -2,13 +2,14 @@
 The Controller for Minesweeper
 --------------------------------------------------------------------------------
 Minesweeper Versions:
-0 - Regular Minesweeper
-1 - Minesweeper V (tiles see mines in a 5x5 area)
-2 - Distance Minesweeper (tiles see mines everywhere, and their values are equal to the sum of the inverse of their distances from all mines)
-3 - Weighted Minesweeper (tiles see mines everywhere, and their values are equal to the sum of the inverse of their distances from all mines, where left and down are considered negative, and up and right are considered positive)
-4 - Negative Minesweeper (negative mines can appear, which count as -1 mine for surrounding tiles)
+- Minesweeper (regular Minesweeper)
+- Minesweeper V (tiles see mines in a 5x5 area)
+- Distance Minesweeper (tiles see mines everywhere, and their values are equal to the sum of the inverse of their distances from all mines)
+- Weighted Minesweeper (tiles see mines everywhere, and their values are equal to the sum of the inverse of their distances from all mines, where left and down are considered negative, and up and right are considered positive)
+- Negative Minesweeper (negative mines can appear, which count as -1 mine for surrounding tiles)
 """
 
+import pickle
 from Minesweeper.MinesweeperBoard import Tile, MinesweeperBoard
 from Minesweeper.MinesweeperVBoard import MinesweeperVBoard
 from Minesweeper.DistanceMinesweeperBoard import DistanceMinesweeperBoard
@@ -24,16 +25,22 @@ from GUI import (
     update_tile_board,
     update_value_board,
 )
+from player_stats_template import starting_player_stats, reset_stats
 
 # game settings
 WIDTH = 16
 HEIGHT = 16
 NUM_MINES = 40
-VERSION = 4
+VERSION = "Negative Minesweeper"
 DIFFICULTY = "easy"
 
+# dictionary keeping track of player's stats
+player_stats = None
 
-def run_game(width=16, height=16, num_mines=40, version=0, difficulty="medium"):
+
+def run_game(
+    width=16, height=16, num_mines=40, version="Minesweeper", difficulty="medium"
+):
     """
     Create and run a minesweeper game with the specified settings.
 
@@ -48,8 +55,8 @@ def run_game(width=16, height=16, num_mines=40, version=0, difficulty="medium"):
     num_mines : int, default: 40
         The number of mines to hide in the board.
 
-    version : int, default: 0
-        Which set of rules to play with.
+    version : {"Minesweeper", "Minesweeper V", "Distance Minesweeper", "Weighted Minesweeper", "Negative Minesweeper"}, default: "Minesweeper"
+        Which version of Minesweeper to play.
 
     difficulty : {'easy', 'medium', 'hard'}
         How difficult the game should be (ONLY affects certain gamemodes, such as Distance Minesweeper)
@@ -58,11 +65,11 @@ def run_game(width=16, height=16, num_mines=40, version=0, difficulty="medium"):
     # create the board object based on which Minesweeper mode was selected
     minesweeper_board = None
     match version:
-        case 0:
+        case "Minesweeper":
             minesweeper_board = MinesweeperBoard(width, height, num_mines)
-        case 1:
+        case "Minesweeper V":
             minesweeper_board = MinesweeperVBoard(width, height, num_mines)
-        case 2:
+        case "Distance Minesweeper":
             match difficulty:
                 case "easy":
                     minesweeper_board = DistanceMinesweeperBoard(
@@ -78,7 +85,7 @@ def run_game(width=16, height=16, num_mines=40, version=0, difficulty="medium"):
                     )
                 case _:
                     raise Exception("Invalid difficulty setting")
-        case 3:
+        case "Weighted Minesweeper":
             match difficulty:
                 case "easy":
                     minesweeper_board = WeightedMinesweeperBoard(
@@ -94,7 +101,7 @@ def run_game(width=16, height=16, num_mines=40, version=0, difficulty="medium"):
                     )
                 case _:
                     raise Exception("Invalid difficulty setting")
-        case 4:
+        case "Negative Minesweeper":
             match difficulty:
                 case "easy":
                     minesweeper_board = NegativeMinesweeperBoard(
@@ -156,13 +163,20 @@ def run_game(width=16, height=16, num_mines=40, version=0, difficulty="medium"):
                 clicked_tile[0], clicked_tile[1]
             )
 
-            # if the clicked tile was a mine, end the game
+            # if the clicked tile was a mine, the game is lost
             if (
                 activated_tile.type == Tile.MINE
                 or activated_tile.type == Tile.NEGATIVE_MINE
             ):
                 minesweeper_board.reveal_all_tiles()
                 game_running = False
+
+            # if the board has been completed, the game is won
+            if minesweeper_board.board_finished():
+                print(
+                    "YOU WON!!!"
+                )  # TODO Have a status message in a UI section next to the game board display this
+                player_stats[""]
 
         # if the clicked button was right, plant a flag on the clicked tile
         elif mouse_button == "right":
@@ -175,5 +189,14 @@ def run_game(width=16, height=16, num_mines=40, version=0, difficulty="medium"):
     win.getMouse()
 
 
-while True:
-    run_game(WIDTH, HEIGHT, NUM_MINES, VERSION, DIFFICULTY)
+if __name__ == "__main__":
+    # load the player's stats, or create a new stats file if there isn't one already
+    try:
+        with open("stats", "rb") as stats_file:
+            player_stats = pickle.load(stats_file)
+    except FileNotFoundError:
+        reset_stats()
+        player_stats = starting_player_stats
+
+    while True:
+        run_game(WIDTH, HEIGHT, NUM_MINES, VERSION, DIFFICULTY)

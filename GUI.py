@@ -16,13 +16,7 @@ ODD_TILE_COLOR = color_rgb(238, 217, 196)
 REVEALED_TILE_COLOR = color_rgb(204, 204, 204)
 BACKGROUND_COLOR = color_rgb(100, 100, 100)
 
-# keep track of the player's stats
-player_stats = {
-    "Wins": 0,
-    "Losses": 0,
-}
-
-# create the chess window and make the background grey
+# create the minesweeper window and make the background grey
 win = GraphWin("Minesweeper", WINDOW_WIDTH, WINDOW_HEIGHT, False)
 win.setBackground(BACKGROUND_COLOR)
 

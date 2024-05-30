@@ -1,4 +1,10 @@
-player_stats = {
+"""
+Holds the base template for the player stats dictionary, which is read in and out of the 'stats' file
+"""
+
+import pickle
+
+starting_player_stats = {
     "Minesweeper": {
         # The number of times the player has won on any settings
         "Wins": 0,
@@ -144,3 +150,16 @@ player_stats = {
         "Total loss time": 0,
     },
 }
+
+
+def reset_stats():
+    """
+    Reset the stats file to the starting player stats (0s across the board)
+    """
+
+    with open("stats", "wb") as stats_file:
+        pickle.dump(starting_player_stats, stats_file, protocol=pickle.HIGHEST_PROTOCOL)
+
+def increment_stat(stat_to_increment: str, minesweeper_version="Minesweeper", increment_value=1):
+    """
+    """

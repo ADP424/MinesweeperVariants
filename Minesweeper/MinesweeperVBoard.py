@@ -235,7 +235,9 @@ class MinesweeperVBoard(MinesweeperBoard):
                 (row + 2, col + 2),
             ]
 
-            self.board[row][col].flag_planted = (self.board[row][col].flag_planted + 1) % 2
+            self.board[row][col].flag_planted = (
+                self.board[row][col].flag_planted + 1
+            ) % 2
             self.board[row][col].changed_last_move = True
 
             # change every numbered surrounding tile by the change value

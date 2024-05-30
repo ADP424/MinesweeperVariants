@@ -207,3 +207,25 @@ class NegativeMinesweeperBoard(MinesweeperBoard):
                 ):
                     self.board[tile[0]][tile[1]].value += change_value
                     self.board[tile[0]][tile[1]].changed_last_move = True
+
+    def board_finished(self) -> bool:
+        """
+        Check if the board has been fully revealed/flagged correctly
+
+        Returns
+        -------
+        bool
+            Whether the board has been completed or not
+        """
+
+        for row in self.board:
+            for tile in row:
+
+                # if the tile hasn't been revealed and isn't a correctly flagged mine, the board isn't complete
+                if not tile.revealed and (
+                    tile.flag_planted == 0
+                    or (tile.flag_planted == 1 and tile.type != Tile.MINE)
+                    or (tile.flag_planted == 2 and tile.type != Tile.NEGATIVE_MINE)
+                ):
+                    return False
+        return True

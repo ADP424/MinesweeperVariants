@@ -1,12 +1,13 @@
 import sys
 from enum import Enum
 
+
 class Tile(Enum):
     NULL = -1  # out of bounds
     EMPTY = 0
     MINE = 1
     NUMBERED = 2
-    NEGATIVE_MINE = 3 # not used by regular Minesweeper
+    NEGATIVE_MINE = 3  # not used by regular Minesweeper
 
 
 class MinesweeperTile:

@@ -144,7 +144,9 @@ class DistanceMinesweeperBoard(MinesweeperBoard):
             if self.board[row][col].flag_planted:
                 change_factor = 1
 
-            self.board[row][col].flag_planted = (self.board[row][col].flag_planted + 1) % 2
+            self.board[row][col].flag_planted = (
+                self.board[row][col].flag_planted + 1
+            ) % 2
             self.board[row][col].changed_last_move = True
 
             # change every numbered tile by the inverse of their distance from the flag
