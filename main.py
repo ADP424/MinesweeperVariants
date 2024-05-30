@@ -176,7 +176,6 @@ def run_game(
                 print(
                     "YOU WON!!!"
                 )  # TODO Have a status message in a UI section next to the game board display this
-                player_stats[""]
 
         # if the clicked button was right, plant a flag on the clicked tile
         elif mouse_button == "right":
