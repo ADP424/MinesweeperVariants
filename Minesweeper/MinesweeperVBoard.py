@@ -1,5 +1,6 @@
 import random
 from Minesweeper.MinesweeperBoard import Tile, MinesweeperTile, MinesweeperBoard
+from PlayerStats import PlayerStats
 
 
 class MinesweeperVBoard(MinesweeperBoard):
@@ -8,21 +9,35 @@ class MinesweeperVBoard(MinesweeperBoard):
 
     Attributes
     ----------
+    minesweeper_version: str, default: "Minesweeper V"
+        The name of the Minesweeper version being played on this board.
+
     width : int, default: 16
         The number of tiles wide the board is.
 
     height : int, default: 16
         The number of tiles high the board is.
 
-    num_mines : int, default: 20
+    num_mines : int, default: 40
         The number of mines hidden in the board.
 
-    board : list, default: None
+    board : list, default: 2D array of blank tiles of size height x width
         A 2D array of tiles representing the current board state.
+
+    stats : PlayerStats, optional
+        Stats to update throughout the game whenever a relevant action happens.
     """
 
-    def __init__(self, width=16, height=16, num_mines=20, board=None):
-        super().__init__(width, height, num_mines, board)
+    def __init__(
+        self,
+        minesweeper_version="Minesweeper V",
+        width=16,
+        height=16,
+        num_mines=20,
+        board: list[list[MinesweeperTile]] = None,
+        stats: PlayerStats = None,
+    ):
+        super().__init__(minesweeper_version, width, height, num_mines, board, stats)
 
     def get_random_board(self, first_click_coords=(-1, -1)) -> list:
         """
@@ -41,10 +56,7 @@ class MinesweeperVBoard(MinesweeperBoard):
         """
 
         # create a base board of size width x height
-        board = [
-            [MinesweeperTile() for _ in range(self.board_width)]
-            for _ in range(self.board_height)
-        ]
+        board = [[MinesweeperTile() for _ in range(self.board_width)] for _ in range(self.board_height)]
 
         # create a list of tiles surrounding and including the first click
         first_click_tiles = [
@@ -145,6 +157,7 @@ class MinesweeperVBoard(MinesweeperBoard):
         """
 
         if not self.board[row][col].revealed:
+            self.stats.increment_stat(self.minesweeper_version, "Tiles Revealed")
             self.board[row][col].revealed = True
             self.board[row][col].flag_planted = 0
             self.board[row][col].changed_last_move = True
@@ -208,6 +221,11 @@ class MinesweeperVBoard(MinesweeperBoard):
             if self.board[row][col].flag_planted:
                 change_value = 1
 
+            if self.board[row][col].type == Tile.MINE:
+                self.stats.increment_stat(self.minesweeper_version, "Mines Defused", -change_value)
+            else:
+                self.stats.increment_stat(self.minesweeper_version, "Flag Mistakes", -change_value)
+
             surrounding_tiles = [
                 (row - 2, col - 2),
                 (row - 2, col - 1),
@@ -235,9 +253,7 @@ class MinesweeperVBoard(MinesweeperBoard):
                 (row + 2, col + 2),
             ]
 
-            self.board[row][col].flag_planted = (
-                self.board[row][col].flag_planted + 1
-            ) % 2
+            self.board[row][col].flag_planted = (self.board[row][col].flag_planted + 1) % 2
             self.board[row][col].changed_last_move = True
 
             # change every numbered surrounding tile by the change value

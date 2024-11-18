@@ -1,6 +1,7 @@
 import random
 import math
 from Minesweeper.MinesweeperBoard import Tile, MinesweeperTile, MinesweeperBoard
+from PlayerStats import PlayerStats
 
 
 class WeightedMinesweeperBoard(MinesweeperBoard):
@@ -9,26 +10,39 @@ class WeightedMinesweeperBoard(MinesweeperBoard):
 
     Attributes
     ----------
+    minesweeper_version: str, default: "Weighted Minesweeper"
+        The name of the Minesweeper version being played on this board.
+
     width : int, default: 16
         The number of tiles wide the board is.
 
     height : int, default: 16
         The number of tiles high the board is.
 
-    num_mines : int, default: 20
+    num_mines : int, default: 40
         The number of mines hidden in the board.
 
-    board : list, default: None
+    board : list, default: 2D array of blank tiles of size height x width
         A 2D array of tiles representing the current board state.
+
+    stats : PlayerStats, optional
+        Stats to update throughout the game whenever a relevant action happens.
 
     distance_weight : int, default: 1
         What the distance is squared by when calculating the inverse (higher means smaller numbers means easier)
     """
 
     def __init__(
-        self, width=16, height=16, num_mines=20, board=None, distance_weight=1
+        self,
+        minesweeper_version="Weighted Minesweeper",
+        width=16,
+        height=16,
+        num_mines=20,
+        board: list[list[MinesweeperTile]] = None,
+        stats: PlayerStats = None,
+        distance_weight=1,
     ):
-        super().__init__(width, height, num_mines, board)
+        super().__init__(minesweeper_version, width, height, num_mines, board, stats)
         self.distance_weight = distance_weight
 
     def get_random_board(self, first_click_coords=(-1, -1)) -> list:
@@ -49,8 +63,7 @@ class WeightedMinesweeperBoard(MinesweeperBoard):
 
         # create a base board of size width x height (all tiles that aren't mines are numbered in this version)
         board = [
-            [MinesweeperTile(type=Tile.NUMBERED) for _ in range(self.board_width)]
-            for _ in range(self.board_height)
+            [MinesweeperTile(type=Tile.NUMBERED) for _ in range(self.board_width)] for _ in range(self.board_height)
         ]
 
         # create a list of tiles surrounding and including the first click
@@ -106,15 +119,9 @@ class WeightedMinesweeperBoard(MinesweeperBoard):
                             + math.pow(mine_location[1] - col, 2) * horizontal_weight
                         )
                         if squared_distance > 0:
-                            board[row][col].value += (
-                                1 / math.sqrt(squared_distance) ** self.distance_weight
-                            )
+                            board[row][col].value += 1 / math.sqrt(squared_distance) ** self.distance_weight
                         elif squared_distance < 0:
-                            board[row][col].value -= (
-                                1
-                                / math.sqrt(abs(squared_distance))
-                                ** self.distance_weight
-                            )
+                            board[row][col].value -= 1 / math.sqrt(abs(squared_distance)) ** self.distance_weight
 
         return board
 
@@ -131,6 +138,7 @@ class WeightedMinesweeperBoard(MinesweeperBoard):
         """
 
         if not self.board[row][col].revealed:
+            self.stats.increment_stat(self.minesweeper_version, "Tiles Revealed")
             self.board[row][col].revealed = True
             self.board[row][col].flag_planted = 0
             self.board[row][col].changed_last_move = True
@@ -157,9 +165,12 @@ class WeightedMinesweeperBoard(MinesweeperBoard):
             if self.board[row][col].flag_planted:
                 change_factor = 1
 
-            self.board[row][col].flag_planted = (
-                self.board[row][col].flag_planted + 1
-            ) % 2
+            if self.board[row][col].type == Tile.MINE:
+                self.stats.increment_stat(self.minesweeper_version, "Mines Defused", -change_factor)
+            else:
+                self.stats.increment_stat(self.minesweeper_version, "Flag Mistakes", -change_factor)
+
+            self.board[row][col].flag_planted = (self.board[row][col].flag_planted + 1) % 2
             self.board[row][col].changed_last_move = True
 
             # change every numbered tile by the inverse of their distance from the flag
@@ -183,21 +194,15 @@ class WeightedMinesweeperBoard(MinesweeperBoard):
                             horizontal_weight = -1
 
                         squared_distance = (
-                            math.pow(row - r, 2) * vertical_weight
-                            + math.pow(col - c, 2) * horizontal_weight
+                            math.pow(row - r, 2) * vertical_weight + math.pow(col - c, 2) * horizontal_weight
                         )
                         if squared_distance > 0:
                             self.board[r][c].value += (
-                                1
-                                / math.sqrt(squared_distance) ** self.distance_weight
-                                * change_factor
+                                1 / math.sqrt(squared_distance) ** self.distance_weight * change_factor
                             )
                         elif squared_distance < 0:
                             self.board[r][c].value -= (
-                                1
-                                / math.sqrt(abs(squared_distance))
-                                ** self.distance_weight
-                                * change_factor
+                                1 / math.sqrt(abs(squared_distance)) ** self.distance_weight * change_factor
                             )
 
                         self.board[r][c].changed_last_move = True

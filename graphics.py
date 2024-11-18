@@ -224,9 +224,7 @@ class GraphWin(tk.Canvas):
         assert type(title) == type(""), "Title must be a string"
         master = tk.Toplevel(_root)
         master.protocol("WM_DELETE_WINDOW", self.close)
-        tk.Canvas.__init__(
-            self, master, width=width, height=height, highlightthickness=0, bd=0
-        )
+        tk.Canvas.__init__(self, master, width=width, height=height, highlightthickness=0, bd=0)
         self.master.title(title)
         self.pack()
         master.resizable(0, 0)
@@ -253,9 +251,7 @@ class GraphWin(tk.Canvas):
         if self.isClosed():
             return "<Closed GraphWin>"
         else:
-            return "GraphWin('{}', {}, {})".format(
-                self.master.title(), self.getWidth(), self.getHeight()
-            )
+            return "GraphWin('{}', {}, {})".format(self.master.title(), self.getWidth(), self.getHeight())
 
     def __str__(self):
         return repr(self)
@@ -914,14 +910,10 @@ class Image(GraphicsObject):
         Image.idCount = Image.idCount + 1
 
         photo_image = tk.PhotoImage(file=pixmap, master=_root)
-        self.img = photo_image.subsample(
-            int(photo_image.width() / width), int(photo_image.height() / height)
-        )
+        self.img = photo_image.subsample(int(photo_image.width() / width), int(photo_image.height() / height))
 
     def __repr__(self):
-        return "Image({}, {}, {})".format(
-            self.anchor, self.getWidth(), self.getHeight()
-        )
+        return "Image({}, {}, {})".format(self.anchor, self.getWidth(), self.getHeight())
 
     def _draw(self, canvas, options):
         p = self.anchor

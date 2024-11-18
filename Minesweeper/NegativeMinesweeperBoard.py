@@ -1,5 +1,6 @@
 import random
 from Minesweeper.MinesweeperBoard import Tile, MinesweeperTile, MinesweeperBoard
+from PlayerStats import PlayerStats
 
 
 class NegativeMinesweeperBoard(MinesweeperBoard):
@@ -8,28 +9,39 @@ class NegativeMinesweeperBoard(MinesweeperBoard):
 
     Attributes
     ----------
+    minesweeper_version: str, default: "Negative Minesweeper"
+        The name of the Minesweeper version being played on this board.
+
     width : int, default: 16
         The number of tiles wide the board is.
 
     height : int, default: 16
         The number of tiles high the board is.
 
-    num_mines : int, default: 20
-        The number of mines hidden in the board.
+    num_positive_mines : int, default: 20
+        The number of regular mines hidden in the board.
 
-    board : list, default: None
+    num_negative_mines : int, default: 20
+        The number of negative mines hidden in the board.
+
+    board : list, default: 2D array of blank tiles of size height x width
         A 2D array of tiles representing the current board state.
+
+    stats : PlayerStats, optional
+        Stats to update throughout the game whenever a relevant action happens.
     """
 
     def __init__(
         self,
+        minesweeper_version="Negative Minesweeper",
         width=16,
         height=16,
         num_positive_mines=20,
         num_negative_mines=20,
-        board=None,
+        board: list[list[MinesweeperTile]] = None,
+        stats: PlayerStats = None,
     ):
-        super().__init__(width, height, num_positive_mines + num_negative_mines, board)
+        super().__init__(minesweeper_version, width, height, num_positive_mines + num_negative_mines, board, stats)
         self.num_positive_mines = num_positive_mines
         self.num_negative_mines = num_negative_mines
 
@@ -50,10 +62,7 @@ class NegativeMinesweeperBoard(MinesweeperBoard):
         """
 
         # create a base board of size width x height
-        board = [
-            [MinesweeperTile() for _ in range(self.board_width)]
-            for _ in range(self.board_height)
-        ]
+        board = [[MinesweeperTile() for _ in range(self.board_width)] for _ in range(self.board_height)]
 
         # create a list of tiles surrounding and including the first click
         first_click_tiles = [
@@ -87,9 +96,7 @@ class NegativeMinesweeperBoard(MinesweeperBoard):
                 board[mine_location[0]][mine_location[1]] = MinesweeperTile(Tile.MINE)
                 positive_count += 1
             else:
-                board[mine_location[0]][mine_location[1]] = MinesweeperTile(
-                    Tile.NEGATIVE_MINE
-                )
+                board[mine_location[0]][mine_location[1]] = MinesweeperTile(Tile.NEGATIVE_MINE)
 
             surrounding_tiles = [
                 (mine_location[0] - 1, mine_location[1] - 1),
@@ -133,6 +140,7 @@ class NegativeMinesweeperBoard(MinesweeperBoard):
         """
 
         if not self.board[row][col].revealed:
+            self.stats.increment_stat(self.minesweeper_version, "Tiles Revealed")
             self.board[row][col].revealed = True
             self.board[row][col].flag_planted = False
             self.board[row][col].changed_last_move = True
@@ -182,6 +190,29 @@ class NegativeMinesweeperBoard(MinesweeperBoard):
             else:
                 change_value = 2
 
+            # TODO: this is ridiculous lol
+            if self.board[row][col].type == Tile.MINE:
+                if self.board[row][col].flag_planted == 0:
+                    self.stats.increment_stat(self.minesweeper_version, "Positive Mines Defused")
+                elif self.board[row][col].flag_planted == 1:
+                    self.stats.increment_stat(self.minesweeper_version, "Positive Mines Defused", -1)
+                    self.stats.increment_stat(self.minesweeper_version, "Flag Mistakes")
+                else:
+                    self.stats.increment_stat(self.minesweeper_version, "Flag Mistakes", -1)
+            elif self.board[row][col].type == Tile.NEGATIVE_MINE:
+                if self.board[row][col].flag_planted == 0:
+                    self.stats.increment_stat(self.minesweeper_version, "Flag Mistakes", -1)
+                elif self.board[row][col].flag_planted == 1:
+                    self.stats.increment_stat(self.minesweeper_version, "Negative Mines Defused")
+                else:
+                    self.stats.increment_stat(self.minesweeper_version, "Negative Mines Defused", -1)
+                    self.stats.increment_stat(self.minesweeper_version, "Flag Mistakes")
+            else:
+                if self.board[row][col].flag_planted == 0:
+                    self.stats.increment_stat(self.minesweeper_version, "Flag Mistakes")
+                elif self.board[row][col].flag_planted == 2:
+                    self.stats.increment_stat(self.minesweeper_version, "Flag Mistakes", -1)
+
             surrounding_tiles = [
                 (row - 1, col - 1),
                 (row - 1, col),
@@ -193,9 +224,7 @@ class NegativeMinesweeperBoard(MinesweeperBoard):
                 (row + 1, col + 1),
             ]
 
-            self.board[row][col].flag_planted = (
-                self.board[row][col].flag_planted + 1
-            ) % 3
+            self.board[row][col].flag_planted = (self.board[row][col].flag_planted + 1) % 3
             self.board[row][col].changed_last_move = True
 
             # change every numbered surrounding tile by the change value

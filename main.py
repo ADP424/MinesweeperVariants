@@ -9,6 +9,7 @@ Minesweeper Versions:
 - Negative Minesweeper (negative mines can appear, which count as -1 mine for surrounding tiles)
 """
 
+from datetime import datetime
 import pickle
 from Minesweeper.MinesweeperBoard import Tile, MinesweeperBoard
 from Minesweeper.MinesweeperVBoard import MinesweeperVBoard
@@ -25,7 +26,7 @@ from GUI import (
     update_tile_board,
     update_value_board,
 )
-from player_stats_template import starting_player_stats, reset_stats
+from PlayerStats import PlayerStats
 
 # game settings
 WIDTH = 16
@@ -35,12 +36,10 @@ VERSION = "Minesweeper"
 DIFFICULTY = "hard"
 
 # dictionary keeping track of player's stats
-player_stats = None
+player_stats = PlayerStats()
 
 
-def run_game(
-    width=16, height=16, num_mines=40, version="Minesweeper", difficulty="medium"
-):
+def run_game(width=16, height=16, num_mines=40, version="Minesweeper", difficulty="medium"):
     """
     Create and run a minesweeper game with the specified settings.
 
@@ -67,38 +66,28 @@ def run_game(
     match version:
         case "Minesweeper":
             minesweeper_board = MinesweeperBoard(width, height, num_mines)
+            difficulty = ""
         case "Minesweeper V":
             minesweeper_board = MinesweeperVBoard(width, height, num_mines)
+            difficulty = ""
         case "Distance Minesweeper":
             match difficulty:
                 case "easy":
-                    minesweeper_board = DistanceMinesweeperBoard(
-                        width, height, num_mines, distance_weight=3
-                    )
+                    minesweeper_board = DistanceMinesweeperBoard(width, height, num_mines, distance_weight=3)
                 case "medium":
-                    minesweeper_board = DistanceMinesweeperBoard(
-                        width, height, num_mines, distance_weight=2
-                    )
+                    minesweeper_board = DistanceMinesweeperBoard(width, height, num_mines, distance_weight=2)
                 case "hard":
-                    minesweeper_board = DistanceMinesweeperBoard(
-                        width, height, num_mines, distance_weight=1
-                    )
+                    minesweeper_board = DistanceMinesweeperBoard(width, height, num_mines, distance_weight=1)
                 case _:
                     raise Exception("Invalid difficulty setting")
         case "Weighted Minesweeper":
             match difficulty:
                 case "easy":
-                    minesweeper_board = WeightedMinesweeperBoard(
-                        width, height, num_mines, distance_weight=3
-                    )
+                    minesweeper_board = WeightedMinesweeperBoard(width, height, num_mines, distance_weight=3)
                 case "medium":
-                    minesweeper_board = WeightedMinesweeperBoard(
-                        width, height, num_mines, distance_weight=2
-                    )
+                    minesweeper_board = WeightedMinesweeperBoard(width, height, num_mines, distance_weight=2)
                 case "hard":
-                    minesweeper_board = WeightedMinesweeperBoard(
-                        width, height, num_mines, distance_weight=1
-                    )
+                    minesweeper_board = WeightedMinesweeperBoard(width, height, num_mines, distance_weight=1)
                 case _:
                     raise Exception("Invalid difficulty setting")
         case "Negative Minesweeper":
@@ -126,11 +115,15 @@ def run_game(
     draw_tile_board(tile_board)
     draw_value_board(value_board)
 
+    start_time = datetime.now()
+    print(f"START TIME: {start_time}")
+    player_stats.increment_stat(version, "Mines Encountered", num_mines)
+
     # get the first left click the user makes in order to rig the first tile to always be empty
     mouse_button = ""
     while mouse_button != "left":
 
-        # get tile the user clicked
+        # get the tile the user clicked
         clicked_point, mouse_button = win.getMouse()
         clicked_tile = get_clicked_tile_coords(clicked_point, minesweeper_board)
 
@@ -159,24 +152,28 @@ def run_game(
 
         # if the clicked button was left, make a move on the clicked tile
         if mouse_button == "left":
-            activated_tile = minesweeper_board.make_move(
-                clicked_tile[0], clicked_tile[1]
-            )
+            activated_tile = minesweeper_board.make_move(clicked_tile[0], clicked_tile[1])
 
             # if the clicked tile was a mine, the game is lost
-            if (
-                activated_tile.type == Tile.MINE
-                or activated_tile.type == Tile.NEGATIVE_MINE
-            ):
+            if activated_tile.type == Tile.MINE or activated_tile.type == Tile.NEGATIVE_MINE:
+                print("YOU LOST :(")  # TODO Have a status message in a UI section next to the game board display this
                 minesweeper_board.reveal_all_tiles()
                 game_running = False
-                print("YOU LOST :(")
+                player_stats.increment_stat(version, f"{difficulty} Losses".strip())
+                player_stats.increment_stat(
+                    version, f"Total Loss Time {difficulty}".strip(), (datetime.now() - start_time).seconds
+                )
+                player_stats.save_player_stats()
 
             # if the board has been completed, the game is won
             elif minesweeper_board.board_finished():
-                print(
-                    "YOU WON!!!"
-                )  # TODO Have a status message in a UI section next to the game board display this
+                print("YOU WON!!!")  # TODO Have a status message in a UI section next to the game board display this
+                game_running = False
+                player_stats.increment_stat(version, f"{difficulty} Wins".strip())
+                player_stats.increment_stat(
+                    version, f"Total Win Time {difficulty}".strip(), (datetime.now() - start_time).seconds
+                )
+                player_stats.save_player_stats()
 
         # if the clicked button was right, plant a flag on the clicked tile
         elif mouse_button == "right":
@@ -190,13 +187,6 @@ def run_game(
 
 
 if __name__ == "__main__":
-    # load the player's stats, or create a new stats file if there isn't one already
-    try:
-        with open("stats", "rb") as stats_file:
-            player_stats = pickle.load(stats_file)
-    except FileNotFoundError:
-        reset_stats()
-        player_stats = starting_player_stats
-
+    player_stats.load_player_stats()
     while True:
         run_game(WIDTH, HEIGHT, NUM_MINES, VERSION, DIFFICULTY)

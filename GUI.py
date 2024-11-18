@@ -114,16 +114,8 @@ def get_value_images(
             return [
                 Image(
                     Point(
-                        (
-                            tile_board[row][col].getP1().getX()
-                            + tile_board[row][col].getP2().getX()
-                        )
-                        / 2,
-                        (
-                            tile_board[row][col].getP1().getY()
-                            + tile_board[row][col].getP2().getY()
-                        )
-                        / 2,
+                        (tile_board[row][col].getP1().getX() + tile_board[row][col].getP2().getX()) / 2,
+                        (tile_board[row][col].getP1().getY() + tile_board[row][col].getP2().getY()) / 2,
                     ),
                     "images/flag.png",
                     int(tile_size / 2),
@@ -135,16 +127,8 @@ def get_value_images(
             return [
                 Image(
                     Point(
-                        (
-                            tile_board[row][col].getP1().getX()
-                            + tile_board[row][col].getP2().getX()
-                        )
-                        / 2,
-                        (
-                            tile_board[row][col].getP1().getY()
-                            + tile_board[row][col].getP2().getY()
-                        )
-                        / 2,
+                        (tile_board[row][col].getP1().getX() + tile_board[row][col].getP2().getX()) / 2,
+                        (tile_board[row][col].getP1().getY() + tile_board[row][col].getP2().getY()) / 2,
                     ),
                     "images/negative_flag.png",
                     int(tile_size / 2),
@@ -157,16 +141,8 @@ def get_value_images(
             return [
                 Image(
                     Point(
-                        (
-                            tile_board[row][col].getP1().getX()
-                            + tile_board[row][col].getP2().getX()
-                        )
-                        / 2,
-                        (
-                            tile_board[row][col].getP1().getY()
-                            + tile_board[row][col].getP2().getY()
-                        )
-                        / 2,
+                        (tile_board[row][col].getP1().getX() + tile_board[row][col].getP2().getX()) / 2,
+                        (tile_board[row][col].getP1().getY() + tile_board[row][col].getP2().getY()) / 2,
                     ),
                     "images/empty.png",
                     int(tile_size / 2),
@@ -179,16 +155,8 @@ def get_value_images(
         return [
             Image(
                 Point(
-                    (
-                        tile_board[row][col].getP1().getX()
-                        + tile_board[row][col].getP2().getX()
-                    )
-                    / 2,
-                    (
-                        tile_board[row][col].getP1().getY()
-                        + tile_board[row][col].getP2().getY()
-                    )
-                    / 2,
+                    (tile_board[row][col].getP1().getX() + tile_board[row][col].getP2().getX()) / 2,
+                    (tile_board[row][col].getP1().getY() + tile_board[row][col].getP2().getY()) / 2,
                 ),
                 "images/empty.png",
                 int(tile_size / 2),
@@ -201,16 +169,8 @@ def get_value_images(
         return [
             Image(
                 Point(
-                    (
-                        tile_board[row][col].getP1().getX()
-                        + tile_board[row][col].getP2().getX()
-                    )
-                    / 2,
-                    (
-                        tile_board[row][col].getP1().getY()
-                        + tile_board[row][col].getP2().getY()
-                    )
-                    / 2,
+                    (tile_board[row][col].getP1().getX() + tile_board[row][col].getP2().getX()) / 2,
+                    (tile_board[row][col].getP1().getY() + tile_board[row][col].getP2().getY()) / 2,
                 ),
                 "images/bomb.png",
                 int(tile_size / 2),
@@ -223,16 +183,8 @@ def get_value_images(
         return [
             Image(
                 Point(
-                    (
-                        tile_board[row][col].getP1().getX()
-                        + tile_board[row][col].getP2().getX()
-                    )
-                    / 2,
-                    (
-                        tile_board[row][col].getP1().getY()
-                        + tile_board[row][col].getP2().getY()
-                    )
-                    / 2,
+                    (tile_board[row][col].getP1().getX() + tile_board[row][col].getP2().getX()) / 2,
+                    (tile_board[row][col].getP1().getY() + tile_board[row][col].getP2().getY()) / 2,
                 ),
                 "images/negative_bomb.png",
                 int(tile_size / 2),
@@ -245,22 +197,12 @@ def get_value_images(
 
         # if it's positive, just draw the number
         if minesweeper_board.board[row][col].value >= 0:
-            image_name = (
-                "images/" + str(minesweeper_board.board[row][col].value) + ".png"
-            )
+            image_name = "images/" + str(minesweeper_board.board[row][col].value) + ".png"
             return [
                 Image(
                     Point(
-                        (
-                            tile_board[row][col].getP1().getX()
-                            + tile_board[row][col].getP2().getX()
-                        )
-                        / 2,
-                        (
-                            tile_board[row][col].getP1().getY()
-                            + tile_board[row][col].getP2().getY()
-                        )
-                        / 2,
+                        (tile_board[row][col].getP1().getX() + tile_board[row][col].getP2().getX()) / 2,
+                        (tile_board[row][col].getP1().getY() + tile_board[row][col].getP2().getY()) / 2,
                     ),
                     image_name,
                     int(tile_size / 2),
@@ -275,17 +217,8 @@ def get_value_images(
             images.append(
                 Image(
                     Point(
-                        (
-                            tile_board[row][col].getP1().getX()
-                            + tile_board[row][col].getP2().getX()
-                        )
-                        / 2
-                        - tile_size / 4,
-                        (
-                            tile_board[row][col].getP1().getY()
-                            + tile_board[row][col].getP2().getY()
-                        )
-                        / 2,
+                        (tile_board[row][col].getP1().getX() + tile_board[row][col].getP2().getX()) / 2 - tile_size / 4,
+                        (tile_board[row][col].getP1().getY() + tile_board[row][col].getP2().getY()) / 2,
                     ),
                     "images/minus.png",
                     int(tile_size / 6),
@@ -293,23 +226,12 @@ def get_value_images(
                 )
             )
 
-            image_name = (
-                "images/" + str(abs(minesweeper_board.board[row][col].value)) + ".png"
-            )
+            image_name = "images/" + str(abs(minesweeper_board.board[row][col].value)) + ".png"
             images.append(
                 Image(
                     Point(
-                        (
-                            tile_board[row][col].getP1().getX()
-                            + tile_board[row][col].getP2().getX()
-                        )
-                        / 2
-                        + tile_size / 8,
-                        (
-                            tile_board[row][col].getP1().getY()
-                            + tile_board[row][col].getP2().getY()
-                        )
-                        / 2,
+                        (tile_board[row][col].getP1().getX() + tile_board[row][col].getP2().getX()) / 2 + tile_size / 8,
+                        (tile_board[row][col].getP1().getY() + tile_board[row][col].getP2().getY()) / 2,
                     ),
                     image_name,
                     int(tile_size / 3),
@@ -323,26 +245,15 @@ def get_value_images(
 
         # if it's positive, just draw the decimal
         if minesweeper_board.board[row][col].value > 0:
-            value_string = str(round(minesweeper_board.board[row][col].value, 3)).split(
-                "."
-            )
+            value_string = str(round(minesweeper_board.board[row][col].value, 3)).split(".")
 
             # add the value before the decimal
             image_name = "images/" + str(value_string[0]) + ".png"
             images.append(
                 Image(
                     Point(
-                        (
-                            tile_board[row][col].getP1().getX()
-                            + tile_board[row][col].getP2().getX()
-                        )
-                        / 2
-                        - tile_size / 4,
-                        (
-                            tile_board[row][col].getP1().getY()
-                            + tile_board[row][col].getP2().getY()
-                        )
-                        / 2,
+                        (tile_board[row][col].getP1().getX() + tile_board[row][col].getP2().getX()) / 2 - tile_size / 4,
+                        (tile_board[row][col].getP1().getY() + tile_board[row][col].getP2().getY()) / 2,
                     ),
                     image_name,
                     int(tile_size / 4),
@@ -354,17 +265,8 @@ def get_value_images(
             images.append(
                 Image(
                     Point(
-                        (
-                            tile_board[row][col].getP1().getX()
-                            + tile_board[row][col].getP2().getX()
-                        )
-                        / 2,
-                        (
-                            tile_board[row][col].getP1().getY()
-                            + tile_board[row][col].getP2().getY()
-                        )
-                        / 2
-                        + tile_size / 6,
+                        (tile_board[row][col].getP1().getX() + tile_board[row][col].getP2().getX()) / 2,
+                        (tile_board[row][col].getP1().getY() + tile_board[row][col].getP2().getY()) / 2 + tile_size / 6,
                     ),
                     "images/dot.png",
                     int(tile_size / 6),
@@ -377,17 +279,8 @@ def get_value_images(
             images.append(
                 Image(
                     Point(
-                        (
-                            tile_board[row][col].getP1().getX()
-                            + tile_board[row][col].getP2().getX()
-                        )
-                        / 2
-                        + tile_size / 4,
-                        (
-                            tile_board[row][col].getP1().getY()
-                            + tile_board[row][col].getP2().getY()
-                        )
-                        / 2,
+                        (tile_board[row][col].getP1().getX() + tile_board[row][col].getP2().getX()) / 2 + tile_size / 4,
+                        (tile_board[row][col].getP1().getY() + tile_board[row][col].getP2().getY()) / 2,
                     ),
                     image_name,
                     int(tile_size / 4),
@@ -397,26 +290,15 @@ def get_value_images(
 
         # if it's negative, draw a minus sign before the decimal
         else:
-            value_string = str(round(minesweeper_board.board[row][col].value, 3))[
-                1:
-            ].split(".")
+            value_string = str(round(minesweeper_board.board[row][col].value, 3))[1:].split(".")
 
             # add the value before the decimal
             image_name = "images/" + str(value_string[0]) + ".png"
             images.append(
                 Image(
                     Point(
-                        (
-                            tile_board[row][col].getP1().getX()
-                            + tile_board[row][col].getP2().getX()
-                        )
-                        / 2
-                        - tile_size / 4,
-                        (
-                            tile_board[row][col].getP1().getY()
-                            + tile_board[row][col].getP2().getY()
-                        )
-                        / 2,
+                        (tile_board[row][col].getP1().getX() + tile_board[row][col].getP2().getX()) / 2 - tile_size / 4,
+                        (tile_board[row][col].getP1().getY() + tile_board[row][col].getP2().getY()) / 2,
                     ),
                     image_name,
                     int(tile_size / 4),
@@ -428,17 +310,8 @@ def get_value_images(
             images.append(
                 Image(
                     Point(
-                        (
-                            tile_board[row][col].getP1().getX()
-                            + tile_board[row][col].getP2().getX()
-                        )
-                        / 2,
-                        (
-                            tile_board[row][col].getP1().getY()
-                            + tile_board[row][col].getP2().getY()
-                        )
-                        / 2
-                        + tile_size / 6,
+                        (tile_board[row][col].getP1().getX() + tile_board[row][col].getP2().getX()) / 2,
+                        (tile_board[row][col].getP1().getY() + tile_board[row][col].getP2().getY()) / 2 + tile_size / 6,
                     ),
                     "images/dot.png",
                     int(tile_size / 6),
@@ -451,17 +324,8 @@ def get_value_images(
             images.append(
                 Image(
                     Point(
-                        (
-                            tile_board[row][col].getP1().getX()
-                            + tile_board[row][col].getP2().getX()
-                        )
-                        / 2
-                        + tile_size / 4,
-                        (
-                            tile_board[row][col].getP1().getY()
-                            + tile_board[row][col].getP2().getY()
-                        )
-                        / 2,
+                        (tile_board[row][col].getP1().getX() + tile_board[row][col].getP2().getX()) / 2 + tile_size / 4,
+                        (tile_board[row][col].getP1().getY() + tile_board[row][col].getP2().getY()) / 2,
                     ),
                     image_name,
                     int(tile_size / 4),
@@ -500,9 +364,7 @@ def create_value_board(tile_board: list, minesweeper_board: MinesweeperBoard) ->
     for i in range(len(minesweeper_board.board)):
         value_board.append([])
         for j in range(len(minesweeper_board.board[i])):
-            value_board[i].append(
-                get_value_images(i, j, tile_size, tile_board, minesweeper_board)
-            )
+            value_board[i].append(get_value_images(i, j, tile_size, tile_board, minesweeper_board))
 
     return value_board
 
@@ -555,18 +417,13 @@ def update_tile_board(tile_board: list, minesweeper_board: MinesweeperBoard):
         for j in range(minesweeper_board.board_width):
 
             # if the tile was updated last move, redraw the tile
-            if (
-                minesweeper_board.board[i][j].changed_last_move
-                and minesweeper_board.board[i][j].revealed
-            ):
+            if minesweeper_board.board[i][j].changed_last_move and minesweeper_board.board[i][j].revealed:
                 tile_board[i][j].undraw()
                 tile_board[i][j].setFill(REVEALED_TILE_COLOR)
                 tile_board[i][j].draw(win)
 
 
-def update_value_board(
-    value_board: list, tile_board: list, minesweeper_board: MinesweeperBoard
-):
+def update_value_board(value_board: list, tile_board: list, minesweeper_board: MinesweeperBoard):
     """
     Redraw all tile values on tiles that changed last move.
 
@@ -595,9 +452,7 @@ def update_value_board(
                 for image in value_board[i][j]:
                     image.undraw()
 
-                value_board[i][j] = get_value_images(
-                    i, j, tile_size, tile_board, minesweeper_board
-                )
+                value_board[i][j] = get_value_images(i, j, tile_size, tile_board, minesweeper_board)
 
                 for image in value_board[i][j]:
                     image.draw(win)
@@ -629,11 +484,7 @@ def get_clicked_tile_coords(point: Point, minesweeper_board: MinesweeperBoard):
         (WINDOW_HEIGHT - WINDOW_BORDERS) / minesweeper_board.board_height,
         (WINDOW_WIDTH - WINDOW_BORDERS) / minesweeper_board.board_width,
     )
-    row = (
-        point.getY() - (WINDOW_HEIGHT - tile_size * minesweeper_board.board_height) / 2
-    ) // tile_size
-    col = (
-        point.getX() - (WINDOW_WIDTH - tile_size * minesweeper_board.board_width) / 2
-    ) // tile_size
+    row = (point.getY() - (WINDOW_HEIGHT - tile_size * minesweeper_board.board_height) / 2) // tile_size
+    col = (point.getX() - (WINDOW_WIDTH - tile_size * minesweeper_board.board_width) / 2) // tile_size
 
     return (int(row), int(col))
