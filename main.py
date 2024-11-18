@@ -31,8 +31,8 @@ from player_stats_template import starting_player_stats, reset_stats
 WIDTH = 16
 HEIGHT = 16
 NUM_MINES = 40
-VERSION = "Negative Minesweeper"
-DIFFICULTY = "easy"
+VERSION = "Minesweeper"
+DIFFICULTY = "hard"
 
 # dictionary keeping track of player's stats
 player_stats = None
@@ -170,9 +170,10 @@ def run_game(
             ):
                 minesweeper_board.reveal_all_tiles()
                 game_running = False
+                print("YOU LOST :(")
 
             # if the board has been completed, the game is won
-            if minesweeper_board.board_finished():
+            elif minesweeper_board.board_finished():
                 print(
                     "YOU WON!!!"
                 )  # TODO Have a status message in a UI section next to the game board display this
